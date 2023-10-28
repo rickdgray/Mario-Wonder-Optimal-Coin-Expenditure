@@ -1,4 +1,6 @@
 import random
+import numpy as np
+from tqdm import trange
 from typing import List
 
 
@@ -56,9 +58,19 @@ if __name__ == "__main__":
 
     bags = [bag1, bag2, bag3]
 
-    drawn_marbles = set()
-    while len(drawn_marbles) < 144:
-        marble = draw_marble_with_replace(bags)
-        if marble.id not in drawn_marbles:
-            drawn_marbles.add(marble.id)
-            print(f"Drew new {marble}")
+    # monte carlos
+    sims = []
+    for i in trange(2000):
+        draw_count = 0
+        drawn_marbles = set()
+        while len(drawn_marbles) < 144:
+            marble = draw_marble_with_replace(bags)
+            draw_count += 1
+            if marble.id not in drawn_marbles:
+                drawn_marbles.add(marble.id)
+                # print(f"Drew new {marble}")
+
+        sims.append(draw_count)
+        # print(f"Number of draws: {draw_count}")
+    
+    print(np.mean(sims))
