@@ -15,7 +15,7 @@ There are two primary methods to obtain standees:
 ## Key Findings
 
 Based on the simulations:
-- **Random standees** should be purchased until your collection contains approximately **78 to 80 standees**.
+- **Random standees** should be purchased until your collection contains approximately **78 standees**.
 - At this point, switching to **guaranteed standees** becomes financially advantageous.
 - Using this strategy, the total expected expenditure is around **3,272 coins**.
 
