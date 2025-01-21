@@ -1,76 +1,46 @@
 import random
 import numpy as np
-from tqdm import trange
-from typing import List
+from tqdm import tqdm
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
-prob1 = .55
-prob2 = .35
-prob3 = .10
+def simulate(threshold, num_simulations=1000):
+    costs = []
+    for _ in range(num_simulations):
+        collection = set()
+        total_cost = 0
 
-marbles1 = 48
-marbles2 = 48
-marbles3 = 48
+        while len(collection) < 144:
+            if len(collection) < threshold:
+                total_cost += 10
+                item = random.choices(
+                    population=list(range(144)),
+                    weights=[0.55 if i < 48 else 0.35 if i < 96 else 0.10 for i in range(144)]
+                )[0]
+            else:
+                total_cost += 30
+                available_items = set(range(144)) - collection
+                item = random.choice(list(available_items))
 
-class Marble(object):
-    def __init__(self, id, color):
-        self.id = id
-        self.color = color
-        self.drawn = False
+            collection.add(item)
 
-    def __repr__(self):
-        return f"Marble {self.id} ({self.color})"
+        costs.append(total_cost)
 
-
-def draw_marble_with_replace(bags: List[List[Marble]]):
-    r = random.random()
-    bag: List[Marble] = None
-    if r < prob1:
-        bag = bags[0]
-    elif r < prob1 + prob2:
-        bag = bags[1]
-    else:
-        bag = bags[2]
-    marble = random.choice(bag)
-    marble.drawn = True
-    return marble
-
-
-def draw_marble_without_replace(bags: List[List[Marble]]):
-    # shit perf but don't care
-    marble = draw_marble_with_replace(bags)
-    while marble.drawn:
-        marble = draw_marble_with_replace(bags)
-    return marble
+    return np.mean(costs)
 
 
 if __name__ == "__main__":
-    bag1 = []
-    bag2 = []
-    bag3 = []
+    thresholds = range(72, 85, 1)
+    results = {}
 
-    for i in range(marbles1):
-        bag1.append(Marble(i, "black"))
-    for i in range(marbles1, marbles1 + marbles2):
-        bag2.append(Marble(i, "silver"))
-    for i in range(marbles1 + marbles2, marbles1 + marbles2 + marbles3):
-        bag3.append(Marble(i, "gold"))
+    for threshold in tqdm(thresholds):
+        avg_cost = simulate(threshold, num_simulations=5000)
+        results[threshold] = avg_cost
 
-    bags = [bag1, bag2, bag3]
+    results_df = pd.DataFrame(list(results.items()), columns=["Threshold", "Average Cost"])
 
-    # monte carlos
-    sims = []
-    for i in trange(2000):
-        draw_count = 0
-        drawn_marbles = set()
-        while len(drawn_marbles) < 144:
-            marble = draw_marble_with_replace(bags)
-            draw_count += 1
-            if marble.id not in drawn_marbles:
-                drawn_marbles.add(marble.id)
-                # print(f"Drew new {marble}")
-
-        sims.append(draw_count)
-        # print(f"Number of draws: {draw_count}")
-    
-    print(np.mean(sims))
+    plt.plot(results_df["Threshold"], results_df["Average Cost"])
+    plt.xlabel("Threshold")
+    plt.ylabel("Average Cost")
+    plt.show()
