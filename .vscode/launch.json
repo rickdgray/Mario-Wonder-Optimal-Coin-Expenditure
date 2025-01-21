@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Mario",
-            "type": "python",
+            "name": "Standee Simulations",
+            "type": "debugpy",
             "request": "launch",
-            "program": "mario.py",
+            "program": "standee_simulations.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
